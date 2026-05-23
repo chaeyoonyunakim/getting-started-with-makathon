@@ -50,7 +50,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Semgrep (security audit + OWASP + typescript + react)
         run: |
-          semgrep ci \
+          semgrep scan \
             --config p/security-audit \
             --config p/owasp-top-ten \
             --config p/typescript \
