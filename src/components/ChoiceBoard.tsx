@@ -10,6 +10,7 @@ import { usePupilBoard } from "@/hooks/usePupilBoard";
 import BoardGrid from "@/components/board/BoardGrid";
 import BoardCell, { type BoardSymbol } from "@/components/board/BoardCell";
 import CoreStrip from "@/components/board/CoreStrip";
+import { useNextCardPredictions } from "@/hooks/useNextCardPredictions";
 import {
   Dialog,
   DialogContent,
@@ -81,6 +82,14 @@ const ChoiceBoard = () => {
 
   // Root-level grid sourced from the DB via the typed hook (with local fallback).
   const { data: rootBoard } = usePupilBoard(currentPupilId, "root");
+
+  // Next-card personalisation: highlights the most likely follow-on cards.
+  // No-ops when the active category isn't a real DB scene UUID.
+  const { topIds: predictedIds } = useNextCardPredictions(
+    currentPupilId,
+    activeCategory?.id ?? null,
+    null,
+  );
 
   const handleFullReset = useCallback(() => {
     setActiveCategory(null);
@@ -334,6 +343,7 @@ const ChoiceBoard = () => {
                 intent={activeCategory ? "subitem" : "category"}
                 highContrast={highContrast}
                 disabled={!!activeCategory && boardLocked}
+                predicted={!!activeCategory && predictedIds.has(sym.id)}
                 onSelect={() => {
                   if (!activeCategory) {
                     const fullCat = categories.find((c) => c.id === sym.id || c.label === sym.label);
