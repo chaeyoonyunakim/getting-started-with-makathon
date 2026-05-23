@@ -6,6 +6,8 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.2.0-pilot.1] — 2026-05-23
+
 ### Added
 - Repo-access hardening pass (PR #1, merged 2026-05-23):
   - `.github/workflows/security.yml` jobs: `dependency-audit`,
@@ -21,8 +23,14 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - SEO: Google Search Console verification meta tag in `index.html`;
   site verified, registered, and sitemap submitted.
 
+### Fixed
+- `supabase-policy-lint` CI check false positive: awk `SECURITY DEFINER`
+  guard now uses `tolower()` so `SET search_path = public` is matched
+  case-insensitively.
+
 ### Changed
-- Dead code removed; ESLint clean across the repo.
+- Dead code removed (`githubSymbolUrl`, `makatonImageUrl`,
+  `useMakatonLicensed.ts`); ESLint clean across the repo.
 - TA notifications fully migrated to in-app realtime; the Slack
   webhook path is gone.
 

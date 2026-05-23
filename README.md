@@ -25,9 +25,10 @@ retention, sub-processors, and how to handle Subject Access Requests
   bandit running inside the `predictNextCards` Edge Function. **No
   external LLM is called at runtime.** Nightly bandit update via
   `updateBanditNightly`.
-- **Symbol sourcing**: ARASAAC REST API (primary) → Mulberry Symbols
-  CDN (lazy fetch) → Sclera (high-contrast only) → optional AI
-  synthesis (off by default). See **Symbol licensing** below.
+- **Symbol sourcing**: Local cache (`/public/symbols/`) first; on 404
+  `BoardCell` calls the `resolveSymbol` edge function: ARASAAC REST API
+  → Mulberry CDN → Sclera (high-contrast) → optional AI synthesis (off
+  by default). See **Symbol licensing** below.
 - **Realtime**: Supabase Realtime channel on the `ta_notifications`
   table for in-app TA alerts (no external webhooks).
 - **Testing**: Vitest smoke tests for board rendering, prediction
@@ -40,6 +41,9 @@ retention, sub-processors, and how to handle Subject Access Requests
 | `predictNextCards` | Markov + bandit Top-3 prediction. No LLM. |
 | `updateBanditNightly` | Recomputes bandit posteriors from yesterday's selections. |
 | `resolveSymbol` | Licence-aware symbol fallback chain (ARASAAC → Mulberry → Sclera → AI). |
+| `makaton-greeting` | Category-arrival greeting text. |
+| `makaton-predict` | AI-suggested quick-choice signs (first-session fallback). |
+| `makaton-reward` | Generates the Golden Sign celebration image. |
 | `makaton-notifier` | Writes in-app TA notifications to `ta_notifications`. |
 | `purgeOldSelections` | Nightly retention enforcement. |
 | `exportPupilData` | Subject Access Request export (JSON). |
@@ -48,9 +52,12 @@ retention, sub-processors, and how to handle Subject Access Requests
 
 ## Symbol licensing
 
-Choice Board never embeds proprietary symbol sets in its repository.
-Symbols are fetched at runtime and cached, with the source, licence,
-and attribution stored on every `cards` row.
+Open-licensed symbols (ARASAAC CC BY-NC-SA 4.0) are shipped locally
+under `/public/symbols/` for instant first render. Proprietary symbol
+sets are never embedded. For any label without a local file, `BoardCell`
+calls the `resolveSymbol` edge function, which fetches and caches the
+best available alternative, storing source, licence, and attribution on
+every `cards` row.
 
 | Source | Licence | Required attribution |
 |---|---|---|
@@ -175,7 +182,7 @@ variable at runtime only.
 
 ## CI
 
-Every pull request runs `.github/workflows/security.yml`:
+Every push to `main`, pull request, and weekly schedule run `.github/workflows/security.yml`:
 
 | Job | Tool | What it checks |
 |---|---|---|

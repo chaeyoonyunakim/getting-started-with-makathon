@@ -63,7 +63,7 @@ src/
 │   ├── NavLink.tsx
 │   ├── StudentSetupModal.tsx       First-run pupil-name prompt.
 │   ├── StudentProfileChip.tsx      Switches pupil; shows current name.
-│   ├── QuickChoices.tsx            Predictive core-word suggestions (Markov + bandit blend).
+│   ├── QuickChoices.tsx            AI-suggested quick-access signs via `makaton-predict`; first-session essentials view.
 │   ├── MakatonPlaceholder.tsx
 │   ├── board/                      Composable board primitives.
 │   │   ├── BoardGrid.tsx           CSS grid shell.
@@ -87,7 +87,9 @@ src/
 │   └── makaton.tsx                 Local fallback fixtures; DB is source of truth.
 ├── types/
 │   └── choiceBoard.ts              ChoiceItem / Category types.
-├── test/                           Vitest setup + RLS / sanitiser tests.
+├── test/                           Vitest setup, RLS-regression (rls-pupils-delete), sanitiser, example tests.
+├── lib/__tests__/                  depthRouter, predictionBlend, sessionState unit tests.
+├── components/__tests__/           board smoke tests.
 └── integrations/supabase/          Auto-generated client + types — DO NOT EDIT.
 ```
 
