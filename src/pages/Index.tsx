@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import SeoHead from "@/components/SeoHead";
 import ChoiceBoard from "@/components/ChoiceBoard";
 import StudentSetupModal from "@/components/StudentSetupModal";
 import StudentProfileChip from "@/components/StudentProfileChip";
