@@ -23,7 +23,7 @@ const resolveImage = (label: string): string | undefined => {
 };
 
 const QuickChoices = ({ category, highContrast, historyLog, onSelect }: QuickChoicesProps) => {
-  const { currentStudent, isProfileSet } = useStudent();
+  const { currentStudent, currentPupilId, isProfileSet } = useStudent();
   const [predictions, setPredictions] = useState<PredictedSign[]>([]);
   const [loading, setLoading] = useState(false);
 
