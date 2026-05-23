@@ -146,6 +146,17 @@ jobs:
       - name: Replay migrations and verify sensitive RLS guards
         run: bun run scripts/check-rls-regression.ts
 
+  docs-freshness:
+    name: Docs freshness guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Verify docs match repo (files, tables, CI jobs)
+        run: bun run scripts/check-docs-freshness.ts
+
   hibp-protection:
     name: Leaked-password (HIBP) protection guard
     runs-on: ubuntu-latest
