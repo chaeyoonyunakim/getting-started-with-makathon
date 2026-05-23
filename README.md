@@ -153,7 +153,22 @@ column records a pupil's home language for SENCo reference.
 
 - `bun install`
 - `bun run dev`
+- `bun run lint` — ESLint (TypeScript + React rules)
 - `bunx vitest run` — Vitest smoke tests
 - See [`CHANGELOG.md`](CHANGELOG.md) for release history and
   [`docs/pilot-smoke-test.md`](docs/pilot-smoke-test.md) for the TA
   manual verification checklist.
+
+## CI
+
+Every pull request runs `.github/workflows/security.yml`:
+
+| Job | Tool | What it checks |
+|---|---|---|
+| `dependency-audit` | `bun audit` | No critical-severity advisories in production deps |
+| `secret-scan` | Gitleaks | No credentials or API keys committed to history |
+| `static-analysis` | Semgrep | OWASP Top 10, security-audit, TypeScript, React, and secrets rulesets |
+| `supabase-policy-lint` | Python + awk | No `DISABLE ROW LEVEL SECURITY`; no `USING (true)` / `WITH CHECK (true)` on non-catalogue tables; `SECURITY DEFINER` functions must pin `search_path`; no `role` column on `profiles` |
+| `rls-regression` | `scripts/check-rls-regression.ts` | Key RLS guards still present after each migration |
+| `hibp-protection` | `scripts/check-hibp-protection.ts` | HIBP leaked-password check enabled; no bypass patterns in source |
+| `unit-tests` | Vitest + ESLint | Smoke tests pass; zero lint errors |
