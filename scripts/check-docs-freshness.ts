@@ -136,9 +136,7 @@ function listMigrationTables(): Set<string> {
   const out = new Set<string>();
   let files: string[];
   try {
-    files = (require("node:fs").readdirSync(dir) as string[]).filter((f) =>
-      f.endsWith(".sql"),
-    );
+    files = readdirSync(dir).filter((f) => f.endsWith(".sql"));
   } catch {
     return out;
   }
