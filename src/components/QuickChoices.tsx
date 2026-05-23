@@ -39,7 +39,7 @@ const QuickChoices = ({ category, highContrast, historyLog, onSelect }: QuickCho
       try {
         const { data, error } = await supabase.functions.invoke("makaton-predict", {
           body: {
-            child_name: currentStudent,
+            child_name: currentPupilId ?? "pupil",
             category: category || "",
             history_log: historyLog.length > 0 ? historyLog : ["general"],
             is_first_session: isFirstSession,
