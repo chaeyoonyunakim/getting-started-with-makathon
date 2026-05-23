@@ -121,6 +121,9 @@ const AuthPage = () => {
     return "Sign up";
   }, [mode]);
 
+  if (loading) return null;
+  if (user) return <Navigate to="/" replace />;
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
       <SeoHead
