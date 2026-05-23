@@ -40,6 +40,14 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/review-symbols"
+                element={
+                  <ProtectedRoute>
+                    <ReviewSymbols />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </StudentProvider>
