@@ -34,14 +34,13 @@ const BoardWithCore = () => {
 
 const Index = () => {
   return (
-    <StudentProvider>
-      <div className="min-h-screen bg-background">
-        <Header profileChip={<StudentProfileChip />} />
-        <BoardWithCore />
-        <StudentSetupModal />
-      </div>
-    </StudentProvider>
+    <div className="min-h-screen bg-background">
+      <Header profileChip={<StudentProfileChip />} />
+      <BoardWithCore />
+      <StudentSetupModal />
+    </div>
   );
 };
+
 
 export default Index;
