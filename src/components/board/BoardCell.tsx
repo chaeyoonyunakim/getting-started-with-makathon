@@ -47,6 +47,8 @@ export const BoardCell = ({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [imgSrc, setImgSrc] = useState<string | undefined>(symbol.imagePath);
+  const resolveAttemptedRef = useRef(false);
   const isRemote = !!(symbol.imagePath && symbol.imagePath.startsWith("http"));
   const isSubItem = intent === "subitem";
 
