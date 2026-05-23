@@ -1,4 +1,4 @@
-# Choice Board — UK SEND Pilot
+# The Makaton — UK SEND Pilot
 
 A digital choice board for non-verbal and emerging-verbal pupils in UK
 SEN schools. Built mobile-first and tablet-optimised (iPad 10.2"
@@ -19,8 +19,9 @@ retention, sub-processors, and how to handle Subject Access Requests
   Functions on Deno) — provisioned via Lovable Cloud.
 - **AuthN/AuthZ**: Supabase Auth (email + password). Authorisation
   enforced by Row-Level Security on every table, scoped through
-  `current_user_org()` and a separate `user_roles` table for SENCo /
-  TA role checks (no role column on `profiles`).
+  `current_user_org()`. Role (`senco` / `ta`) lives on `profiles`,
+  protected by the `prevent_role_self_escalation` trigger and an RLS
+  policy that forbids self-escalation; checked in policies via `has_role()`.
 - **Prediction engine**: Pure-SQL/TypeScript Markov + Thompson-sampling
   bandit running inside the `predictNextCards` Edge Function. **No
   external LLM is called at runtime.** Nightly bandit update via
@@ -74,12 +75,12 @@ the word "Makaton" anywhere by default — only pupils flagged
 
 ## Lawful basis (UK GDPR)
 
-Children's personal data processed by Choice Board (pupil names,
+Children's personal data processed by The Makaton (pupil names,
 selections, predictions, session metadata) is processed under:
 
 - **Article 6(1)(e)** — *processing necessary for the performance of a
   task carried out in the public interest.* The controller is the
-  pilot school (or MAT); Choice Board acts as **processor**.
+  pilot school (or MAT); The Makaton acts as **processor**.
 - **Article 9(2)(g)** — *processing necessary for reasons of
   substantial public interest, on the basis of UK domestic law*
   (Children and Families Act 2014; Education Act 1996) — where
@@ -191,5 +192,6 @@ Every push to `main`, pull request, and weekly schedule run `.github/workflows/s
 | `static-analysis` | Semgrep | OWASP Top 10, security-audit, TypeScript, React, and secrets rulesets |
 | `supabase-policy-lint` | Python + awk | No `DISABLE ROW LEVEL SECURITY`; no `USING (true)` / `WITH CHECK (true)` on non-catalogue tables; `SECURITY DEFINER` functions must pin `search_path`; no `role` column on `profiles` |
 | `rls-regression` | `scripts/check-rls-regression.ts` | Key RLS guards still present after each migration |
+| `docs-freshness` | `scripts/check-docs-freshness.ts` | Documented file paths, database tables, and CI job names still match the repo |
 | `hibp-protection` | `scripts/check-hibp-protection.ts` | HIBP leaked-password check enabled; no bypass patterns in source |
 | `unit-tests` | Vitest + ESLint | Smoke tests pass; zero lint errors |

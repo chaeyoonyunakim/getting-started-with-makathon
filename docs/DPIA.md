@@ -1,4 +1,4 @@
-# Data Protection Impact Assessment — Choice Board
+# Data Protection Impact Assessment — The Makaton
 
 > Structured per the **ICO Children's Code, Annex D** template.
 > Populate the *Controller-specific* sections before the pilot starts;
@@ -6,7 +6,7 @@
 
 ## 1. Identify the need for a DPIA
 
-Choice Board processes the personal data of children in UK SEN
+The Makaton processes the personal data of children in UK SEN
 schools, including data that may reveal health and disability
 information. A DPIA is therefore mandatory under UK GDPR Art. 35(3)(b)
 and the ICO's *Children's Code, standard 2 (Data Protection Impact

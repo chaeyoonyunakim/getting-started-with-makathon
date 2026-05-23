@@ -1,6 +1,6 @@
 # File Structure
 
-Top-level layout of the Choice Board pilot codebase. Kept in sync
+Top-level layout of The Makaton pilot codebase. Kept in sync
 with the post-hardening repo (May 2026).
 
 ## Database (Lovable Cloud / Supabase)
@@ -122,7 +122,9 @@ supabase/functions/
 
 ```
 scripts/
+├── check-docs-freshness.ts         CI: docs/filesExplainer.md paths, tables, and CI jobs match repo.
 ├── check-hibp-protection.ts        CI: HIBP leaked-password protection is on.
+├── check-rls-policies.py           CI: USING/WITH CHECK (true) block parser for supabase-policy-lint.
 ├── check-rls-regression.ts         CI: key RLS guards still present.
 └── seedPredictionsDemo.ts          Local demo seed for the prediction engine.
 ```

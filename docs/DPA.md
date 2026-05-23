@@ -7,7 +7,7 @@
 **This Agreement** is entered into between:
 
 - **[School name]** ("the Controller"), and
-- **[Choice Board operator]** ("the Processor").
+- **[The Makaton operator]** ("the Processor").
 
 ## 1. Subject matter and duration
 

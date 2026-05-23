@@ -1,6 +1,6 @@
-# Gitleaks config for Choice Board
+# Gitleaks config for The Makaton
 # Allowlist values that are publishable by design (Supabase anon key, project URL).
-title = "Choice Board gitleaks config"
+title = "The Makaton gitleaks config"
 
 [extend]
 useDefault = true
