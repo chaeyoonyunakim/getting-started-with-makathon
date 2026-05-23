@@ -82,8 +82,8 @@ function qualify(name: string, defaultSchema = "public"): { schema: string; tabl
 const policies = new Map<PolicyKey, Policy>();
 
 const createRe =
-  /^CREATE\s+POLICY\s+"?([^"\s]+)"?\s+ON\s+([A-Za-z0-9_."]+)\s+([\s\S]+)$/i;
-const dropRe = /^DROP\s+POLICY\s+(?:IF\s+EXISTS\s+)?"?([^"\s]+)"?\s+ON\s+([A-Za-z0-9_."]+)/i;
+  /^CREATE\s+POLICY\s+(?:"([^"]+)"|(\S+))\s+ON\s+([A-Za-z0-9_."]+)\s+([\s\S]+)$/i;
+const dropRe = /^DROP\s+POLICY\s+(?:IF\s+EXISTS\s+)?(?:"([^"]+)"|(\S+))\s+ON\s+([A-Za-z0-9_."]+)/i;
 
 function commandFrom(body: string): string {
   const m = body.match(/\bFOR\s+(ALL|SELECT|INSERT|UPDATE|DELETE)\b/i);
@@ -95,7 +95,9 @@ function ingest(stmt: string) {
   if (upper.startsWith("CREATE POLICY")) {
     const m = stmt.match(createRe);
     if (!m) return;
-    const [, name, target, body] = m;
+    const name = m[1] ?? m[2];
+    const target = m[3];
+    const body = m[4];
     const { schema, table } = qualify(target);
     const command = commandFrom(body);
     const key = `${schema}.${table}|${command}|${name}`;
@@ -105,7 +107,8 @@ function ingest(stmt: string) {
   if (upper.startsWith("DROP POLICY")) {
     const m = stmt.match(dropRe);
     if (!m) return;
-    const [, name, target] = m;
+    const name = m[1] ?? m[2];
+    const target = m[3];
     const { schema, table } = qualify(target);
     for (const cmd of ["ALL", "SELECT", "INSERT", "UPDATE", "DELETE"]) {
       policies.delete(`${schema}.${table}|${cmd}|${name}`);
