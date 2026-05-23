@@ -51,9 +51,27 @@ Deno.serve(async (req) => {
       });
     }
 
-    const safeLabel = typeof label === "string" ? label.slice(0, 80) : "unknown";
-    const safeColor = typeof color === "string" ? color.slice(0, 40) : "Electric Blue";
-    const prompt = `You are given a Makaton sign diagram reference for "${safeLabel}" (Makaton Asset Bank ID: ${makatonId}, URL: ${assetUrl || "N/A"}). Generate a version of this Makaton sign where the black lines are changed to a vibrant ${safeColor} and add a soft glowing background. Keep the technical integrity of the sign perfect — do NOT change the shape, line weight, or characters.`;
+    // Strict validation to prevent prompt injection
+    const idNum = Number(makatonId);
+    const safeMakatonId = Number.isInteger(idNum) && idNum >= 0 && idNum < 1_000_000 ? idNum : 0;
+    const ALLOWED_URL_PREFIXES = [
+      "https://www.makatonassetbank.co.uk/",
+      "https://makatonassetbank.co.uk/",
+      "https://api.arasaac.org/",
+      "https://static.arasaac.org/",
+      "https://mulberrysymbols.org/",
+    ];
+    const safeAssetUrl =
+      typeof assetUrl === "string" &&
+      assetUrl.length < 300 &&
+      ALLOWED_URL_PREFIXES.some((p) => assetUrl.startsWith(p))
+        ? assetUrl
+        : "N/A";
+    const sanitise = (s: string, n: number) =>
+      s.replace(/[^\p{L}\p{N}\s\-_.]/gu, "").slice(0, n);
+    const safeLabel = sanitise(typeof label === "string" ? label : "unknown", 80) || "unknown";
+    const safeColor = sanitise(typeof color === "string" ? color : "Electric Blue", 40) || "Electric Blue";
+    const prompt = `You are given a Makaton sign diagram reference for "${safeLabel}" (Makaton Asset Bank ID: ${safeMakatonId}, URL: ${safeAssetUrl}). Generate a version of this Makaton sign where the black lines are changed to a vibrant ${safeColor} and add a soft glowing background. Keep the technical integrity of the sign perfect — do NOT change the shape, line weight, or characters.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
