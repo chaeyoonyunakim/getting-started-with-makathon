@@ -117,6 +117,8 @@ function ingest(stmt: string) {
 }
 
 function main() {
+  console.log("policies count", policies.size);
+  for (const k of policies.keys()) if (k.startsWith("public.pupils")) console.log(k);
   const all = readMigrations();
   for (const stmt of splitStatements(stripComments(all))) ingest(stmt);
 
