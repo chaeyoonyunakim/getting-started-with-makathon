@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Check, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import SeoHead from "@/components/SeoHead";
 
 interface QueueRow {
   id: string;
