@@ -8,11 +8,12 @@ with the post-hardening repo (May 2026).
 | Table                    | Purpose                                                                 |
 |--------------------------|-------------------------------------------------------------------------|
 | `organisations`          | Schools / settings. All tenant data is scoped per `org_id`.             |
-| `profiles`               | One row per auth user. Holds `org_id`, `home_language`. **No role column.** |
-| `user_roles`             | Separate table holding `(user_id, role)` — `senco` / `ta`. Checked via `has_role()`. |
+| `profiles`               | One row per auth user. Holds `org_id`, `display_name`, and `role` (`senco` / `ta`). Role changes are gated by the `prevent_role_self_escalation` trigger; org reassignment by `prevent_org_self_reassignment`. |
 | `pupils`                 | Children using the board. `grid_size`, `depth_setting`, EHCP tags, `makaton_licensed`. |
 | `cards`                  | Shared symbol catalogue (`label`, `symbol_url`, `source`, `licence`).   |
+| `card_modifiers`         | Optional per-card modifier labels (e.g. tense, plural).                  |
 | `scenes` / `scene_cards` | Configurable choice scenes and their ordered cards.                     |
+| `pupil_scene_overrides`  | Per-pupil enable/disable of specific scenes.                             |
 | `card_selections`        | Raw selection events (with `dwell_ms`, `predicted_in_top3`).             |
 | `sessions`               | Session summaries.                                                       |
 | `predictions_log`        | Top-3 prediction snapshots per selection.                                |
@@ -24,9 +25,12 @@ with the post-hardening repo (May 2026).
 | `org_settings`           | Per-org retention and feature flags.                                     |
 
 Row-level security:
-- Tenant tables filter on `current_user_org()`.
+- Tenant tables filter on `current_user_org()` (`SECURITY DEFINER`, pinned `search_path`).
 - Role checks go through `public.has_role(auth.uid(), 'senco' | 'ta')` —
-  a `SECURITY DEFINER` function with pinned `search_path`.
+  a `SECURITY DEFINER` function with pinned `search_path`. Role escalation
+  is blocked at the row level by the `Users update own profile` policy
+  (forbids changing `role` or `org_id`) and defensively by the
+  `prevent_role_self_escalation` trigger.
 - `cards` is readable by any authenticated user.
 - `mv_pupil_transitions` is revoked from API roles and read only via the
   service-role client inside `predictNextCards`.
