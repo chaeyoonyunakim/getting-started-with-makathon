@@ -22,7 +22,7 @@
  * Run locally:  bun run scripts/check-docs-freshness.ts
  */
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = process.cwd();
