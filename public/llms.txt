@@ -1,4 +1,4 @@
-# AAC Choice Board
+# The Makaton
 
 > A digital Makaton choice board for SEND (Special Educational Needs and Disabilities) pupils and their teaching assistants. Picture-led, high-contrast cards with predictive suggestions and SENCo-managed pupil profiles.
 
