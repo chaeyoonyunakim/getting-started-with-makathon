@@ -3,6 +3,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { sanitizePromptInput } from "../_shared/sanitizePromptInput.ts";
+import { requireOrgMember } from "../_shared/requireOrgMember.ts";
 
 const ARASAAC_ATTR =
   "Symbols author: Sergio Palao. Origin: ARASAAC (https://arasaac.org). Licence: CC BY-NC-SA";
@@ -177,6 +178,10 @@ Deno.serve(async (req) => {
     );
     if (claimsErr || !claims?.claims?.sub) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const orgCheck = await requireOrgMember(userClient, claims.claims.sub as string);
+    if (!orgCheck.ok) {
+      return new Response(JSON.stringify(orgCheck.body), { status: orgCheck.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const body = (await req.json()) as Partial<Body>;
     const label = (body.label ?? "").toString().slice(0, 80).trim();
