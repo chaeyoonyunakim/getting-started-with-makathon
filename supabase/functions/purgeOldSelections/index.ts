@@ -13,6 +13,8 @@ Deno.serve(async (req) => {
   const providedSecret = req.headers.get("x-cron-secret");
   const authHeader = req.headers.get("Authorization");
   let authorised = false;
+  let callerOrgId: string | null = null;
+  let scopedToCallerOrg = false;
 
   if (cronSecret && providedSecret && providedSecret === cronSecret) {
     authorised = true;
@@ -29,7 +31,18 @@ Deno.serve(async (req) => {
         _user_id: claims.claims.sub,
         _role: "senco",
       });
-      if (isSenco === true) authorised = true;
+      if (isSenco === true) {
+        const { data: profile } = await userClient
+          .from("profiles")
+          .select("org_id")
+          .eq("id", claims.claims.sub)
+          .maybeSingle();
+        if (profile?.org_id) {
+          authorised = true;
+          scopedToCallerOrg = true;
+          callerOrgId = profile.org_id as string;
+        }
+      }
     }
   }
 
