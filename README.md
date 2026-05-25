@@ -1,9 +1,18 @@
-# Choice Board — UK SEND Pilot
+[![status: experimental](https://github.com/GIScience/badges/raw/master/status/experimental.svg)](https://github.com/GIScience/badges#experimental)
+
+# The Makaton — UK SEND Pilot
 
 A digital choice board for non-verbal and emerging-verbal pupils in UK
 SEN schools. Built mobile-first and tablet-optimised (iPad 10.2"
 primary). Symbol artwork is fetched from licensed open sources with a
 fallback chain that respects per-school licensing.
+
+This project was inspired by a Makaton lanyard given to the author during
+a short-term assistant work at a SEND school in London, 2022; each card
+showing a symbol on the front and its hand sign on the back, used for
+everyday communication with pupils who had limited verbal speech.
+
+![Physical AAC pocket cards used in the pilot classroom](docs/pocket-cards.png)
 
 This README focuses on **pilot-readiness**: architecture, lawful basis,
 retention, sub-processors, and how to handle Subject Access Requests
@@ -19,8 +28,9 @@ retention, sub-processors, and how to handle Subject Access Requests
   Functions on Deno) — provisioned via Lovable Cloud.
 - **AuthN/AuthZ**: Supabase Auth (email + password). Authorisation
   enforced by Row-Level Security on every table, scoped through
-  `current_user_org()` and a separate `user_roles` table for SENCo /
-  TA role checks (no role column on `profiles`).
+  `current_user_org()`. Role (`senco` / `ta`) lives on `profiles`,
+  protected by the `prevent_role_self_escalation` trigger and an RLS
+  policy that forbids self-escalation; checked in policies via `has_role()`.
 - **Prediction engine**: Pure-SQL/TypeScript Markov + Thompson-sampling
   bandit running inside the `predictNextCards` Edge Function. **No
   external LLM is called at runtime.** Nightly bandit update via
@@ -62,7 +72,7 @@ every `cards` row.
 | Source | Licence | Required attribution |
 |---|---|---|
 | **ARASAAC** (primary) | CC BY-NC-SA 4.0 | *Symbols author: Sergio Palao. Origin: ARASAAC (https://arasaac.org). Licence: Creative Commons (BY-NC-SA).* Property of the Government of Aragón. |
-| **Mulberry Symbols** (fallback, lazy-fetched from CDN) | CC BY-SA 2.0 UK | *Mulberry Symbols by Garry Paxton. Licensed under CC BY-SA 2.0 UK.* |
+| **Mulberry Symbols** (fallback, lazy-fetched from CDN) | CC BY-SA 2.0 UK | *Mulberry Symbols © 2018–2026 Steve Lee. Licensed under CC BY-SA 2.0 UK: England & Wales.* |
 | **Sclera Symbols** (high-contrast fallback) | CC BY-NC 4.0 | *Sclera Symbols — https://www.sclera.be. Licensed under CC BY-NC.* |
 | **AI-synthesised** | Internal review only | Feature-flagged behind `ENABLE_AI_SYMBOLS` (default **false**). When disabled, the resolver returns `null` silently and the UI falls back to the placeholder. |
 | **School-supplied licensed packs** | Per school's own licence | Stored in `org_symbol_packs` and scoped by `org_id`. Used only when the pupil's organisation has the appropriate licence. |
@@ -74,12 +84,12 @@ the word "Makaton" anywhere by default — only pupils flagged
 
 ## Lawful basis (UK GDPR)
 
-Children's personal data processed by Choice Board (pupil names,
+Children's personal data processed by The Makaton (pupil names,
 selections, predictions, session metadata) is processed under:
 
 - **Article 6(1)(e)** — *processing necessary for the performance of a
   task carried out in the public interest.* The controller is the
-  pilot school (or MAT); Choice Board acts as **processor**.
+  pilot school (or MAT); The Makaton acts as **processor**.
 - **Article 9(2)(g)** — *processing necessary for reasons of
   substantial public interest, on the basis of UK domestic law*
   (Children and Families Act 2014; Education Act 1996) — where
@@ -189,7 +199,14 @@ Every push to `main`, pull request, and weekly schedule run `.github/workflows/s
 | `dependency-audit` | `bun audit` | No critical-severity advisories in production deps |
 | `secret-scan` | Gitleaks | No credentials or API keys committed to history |
 | `static-analysis` | Semgrep | OWASP Top 10, security-audit, TypeScript, React, and secrets rulesets |
-| `supabase-policy-lint` | Python + awk | No `DISABLE ROW LEVEL SECURITY`; no `USING (true)` / `WITH CHECK (true)` on non-catalogue tables; `SECURITY DEFINER` functions must pin `search_path`; no `role` column on `profiles` |
+| `supabase-policy-lint` | Python + awk | No `DISABLE ROW LEVEL SECURITY`; no `USING (true)` / `WITH CHECK (true)` on non-catalogue tables; `SECURITY DEFINER` functions must pin `search_path` |
 | `rls-regression` | `scripts/check-rls-regression.ts` | Key RLS guards still present after each migration |
+| `docs-freshness` | `scripts/check-docs-freshness.ts` | Documented file paths, database tables, and CI job names still match the repo |
 | `hibp-protection` | `scripts/check-hibp-protection.ts` | HIBP leaked-password check enabled; no bypass patterns in source |
 | `unit-tests` | Vitest + ESLint | Smoke tests pass; zero lint errors |
+
+---
+
+## Licence
+
+MIT — see [LICENSE](./LICENSE).
