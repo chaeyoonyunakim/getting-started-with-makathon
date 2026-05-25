@@ -9,8 +9,9 @@ fallback chain that respects per-school licensing.
 
 This project was inspired by a Makaton lanyard given to the author during
 a short-term assistant work at a SEND school in London, 2022; each card
-showing a symbol on the front and its hand sign on the back, used for
-everyday communication with pupils who had limited verbal speech.
+showing a symbol on the front and its hand sign on the back
+(see [`assets/cards/`](assets/cards/)), used for everyday communication
+with pupils who had limited verbal speech.
 
 ![Physical AAC pocket cards used in the pilot classroom](assets/pocket-cards.png)
 
